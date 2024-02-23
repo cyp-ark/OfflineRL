@@ -1,15 +1,15 @@
 import torch
 import pandas as pd
 from tqdm import tqdm
-from torch.utils.data import DataLoader
+from torch.utils.data import TensorDataset,DataLoader
 
-def make_transition(data,batch_size):
+def make_transition(data,batch_size,shuffle):
     if data[-3:]=='csv':
         df = pd.read_csv(data)
     elif data[-7:]=='parquet':
         df = pd.read_parquet(data)
     else:
-        "Check data type"
+        "Import csv or parquet data"
         break
     
     s_col = [x for x in df if x[:2]=='s:']
@@ -49,5 +49,5 @@ def make_transition(data,batch_size):
     s2 = torch.FloatTensor(np.float32(s2))
     t  = torch.FloatTensor(np.float32(t))
 
-    rt = DataLoader(TensorDataset(s, a, r, s2, t))
+    rt = DataLoader(TensorDataset(s, a, r, s2, t),batch_size,shuffle)
     return rt, data_len
